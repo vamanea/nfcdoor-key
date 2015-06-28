@@ -1,0 +1,124 @@
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 1 (0x1)
+        Signature Algorithm: dsaWithSHA1
+        Issuer: C=UK, ST=Surrey, L=Eghan, O=Example Inc, CN=Example Inc Root CA/emailAddress=door@lock.co.uk
+        Validity
+            Not Before: May 22 10:14:00 2011 GMT
+            Not After : May 21 10:14:00 2012 GMT
+        Subject: C=UK, ST=Surrey, O=Example Inc, CN=Example Inc Phone/emailAddress=door@key.co.uk
+        Subject Public Key Info:
+            Public Key Algorithm: dsaEncryption
+                pub: 
+                    2d:8f:35:3f:f1:25:93:eb:d6:48:4e:6e:2e:d4:33:
+                    90:bd:69:3e:f6:44:bb:c3:78:47:02:9e:ee:95:7e:
+                    87:04:9f:89:01:ec:ca:60:8b:1a:96:f9:b9:cf:7e:
+                    1b:e0:fc:97:92:4f:ce:e6:97:15:20:a2:a0:7b:23:
+                    73:ba:6a:0b:61:b8:e5:e4:54:4b:4b:f5:c2:de:f5:
+                    1d:e6:47:5e:b9:ae:05:2c:3e:ed:2d:2c:9c:b5:46:
+                    50:35:4a:e9:55:5b:ed:b2:1e:c5:1e:c3:21:5b:1c:
+                    f2:b8:f3:cb:89:e7:8e:04:5d:80:a7:03:cb:4f:c2:
+                    9e:f3:2e:69:ec:34:24:6f:38:57:a0:d8:10:78:5d:
+                    02:3a:fa:65:42:6c:19:df:49:d3:7b:94:a4:b0:d5:
+                    a2:ae:c5:ae:3b:60:50:12:00:1e:6d:9e:ed:27:6e:
+                    c5:69:50:96:5d:e6:10:e4:94:b1:9b:b3:6c:f2:5f:
+                    fd:f6:b2:31:4e:b8:b3:8d:a4:af:50:8a:02:39:61:
+                    a7:fe:96:59:92:24:d2:93:53:49:bc:d9:0d:4e:01:
+                    df:7d:9b:b6:46:d5:03:0e:75:51:21:f9:1f:c2:51:
+                    2d:1c:17:bc:fb:41:5f:99:ab:6b:67:87:43:e0:1c:
+                    be:76:be:20:16:53:ea:00:5c:75:03:6c:d5:e6:ba:
+                    79
+                P:   
+                    00:a9:ae:c1:4f:32:72:d3:bf:d0:a5:68:f4:46:1c:
+                    96:27:12:25:a4:42:f4:22:ba:cc:59:b2:bd:e0:bf:
+                    01:8e:ad:63:df:db:ba:87:57:ea:26:37:77:d0:02:
+                    91:e6:25:26:a2:26:15:e4:91:88:11:ea:cb:87:c2:
+                    9a:3e:cd:5f:95:ee:a7:cb:a0:1d:cc:a7:85:80:07:
+                    25:73:0c:f6:4b:8f:16:12:97:3a:31:c2:95:2e:3b:
+                    26:9b:65:5e:36:da:da:88:51:6b:82:00:9b:2e:54:
+                    cd:d9:31:a5:12:e4:1a:56:b5:39:d2:1d:5e:b2:1a:
+                    fc:ad:eb:91:d6:08:86:1c:7d:3e:7e:8f:ca:c4:6e:
+                    25:4a:be:5b:ec:23:1a:b3:58:38:ec:9d:86:7f:cb:
+                    38:83:83:7d:29:49:92:f0:50:b5:6f:f5:45:3a:11:
+                    84:30:af:f3:77:9e:09:ce:d8:99:97:0e:b8:5e:c1:
+                    c8:bc:94:2c:83:6c:1b:68:c5:89:06:a1:bd:11:6d:
+                    5c:c5:b5:04:d8:ca:f5:f0:2f:a9:4f:e8:21:f1:e4:
+                    15:ed:ea:9b:44:cf:a8:87:d8:7d:23:f2:98:db:e0:
+                    01:45:e8:e0:53:77:0c:b2:d0:45:18:c0:c9:d7:e2:
+                    e1:17:61:d4:05:f1:93:d9:66:d5:2f:36:cd:cf:c2:
+                    1c:2b
+                Q:   
+                    00:c2:71:e4:e8:a9:fa:af:fc:1f:75:56:45:5f:3a:
+                    0e:91:79:18:ca:f1:8f:2d:02:95:e8:d5:fb:63:fd:
+                    5b:81:8b
+                G:   
+                    4c:53:af:c4:54:f0:3a:16:4a:b1:24:67:47:82:2b:
+                    5a:77:9a:83:67:55:80:05:be:3c:d0:79:69:44:3a:
+                    95:a1:c7:83:c3:3c:f9:fc:c0:e2:f7:7c:39:67:c4:
+                    6d:d1:dc:50:d5:4e:9e:77:03:f7:c5:69:83:3e:88:
+                    41:71:0d:b0:0d:d5:dd:33:9a:24:81:b5:aa:07:15:
+                    23:76:9f:24:b7:aa:6d:65:44:f3:12:be:87:17:bd:
+                    d5:80:32:77:d3:36:e4:2f:7f:59:0f:3e:4a:28:63:
+                    c3:93:6a:ff:e8:05:15:2b:e9:43:ed:59:6d:a2:79:
+                    52:69:1b:1a:66:d4:78:fd:9e:80:b0:14:e4:4f:cc:
+                    41:a7:42:6e:c6:d9:66:bd:61:b2:58:3a:84:66:30:
+                    e0:76:8b:e0:c5:cf:0d:b4:6b:30:4d:75:6d:a9:26:
+                    7b:1a:17:e5:5f:5d:76:55:e5:2b:83:f5:67:26:b6:
+                    11:6b:aa:70:a1:e2:f5:cb:36:98:46:37:3b:26:c8:
+                    7e:b6:f0:27:af:28:bc:fd:04:b3:0d:98:12:e0:a4:
+                    99:5f:7d:99:b7:8a:d7:63:8f:8a:a4:e4:30:3c:61:
+                    11:13:ee:64:8a:5b:76:0a:25:27:c6:44:a8:f1:4c:
+                    db:27:e2:e6:bd:7e:99:07:07:99:5e:53:ed:e9:c0:
+                    cb
+        X509v3 extensions:
+            X509v3 Basic Constraints: 
+                CA:FALSE
+            X509v3 Subject Key Identifier: 
+                33:37:C6:3B:9E:80:B7:A5:75:34:8A:A1:6A:E9:BE:AA:86:EF:AC:7F
+            X509v3 Authority Key Identifier: 
+                keyid:FA:84:F7:59:0C:D9:29:D9:57:19:80:29:16:57:41:7E:C8:7B:79:32
+                DirName:/C=UK/ST=Surrey/L=Eghan/O=Example Inc/CN=Example Inc Root CA/emailAddress=door@lock.co.uk
+                serial:B7:2D:B1:22:AC:CE:C6:28
+
+            Netscape CA Revocation Url: 
+                https://www.example.com/example-ca-crl.pem
+    Signature Algorithm: dsaWithSHA1
+        30:45:02:20:05:9b:db:97:50:c1:60:13:05:66:db:15:6d:c8:
+        50:5a:de:93:55:93:07:f0:fc:86:c8:5c:64:dc:51:cc:39:94:
+        02:21:00:8a:ee:9a:b8:9d:5f:04:92:d5:0d:5d:47:16:1a:12:
+        15:31:b7:d1:c6:8d:a8:4f:fb:00:ba:94:a7:fa:85:fb:94
+-----BEGIN CERTIFICATE-----
+MIIF8zCCBZqgAwIBAgIBATAJBgcqhkjOOAQDMIGCMQswCQYDVQQGEwJVSzEPMA0G
+A1UECBMGU3VycmV5MQ4wDAYDVQQHEwVFZ2hhbjEUMBIGA1UEChMLRXhhbXBsZSBJ
+bmMxHDAaBgNVBAMTE0V4YW1wbGUgSW5jIFJvb3QgQ0ExHjAcBgkqhkiG9w0BCQEW
+D2Rvb3JAbG9jay5jby51azAeFw0xMTA1MjIxMDE0MDBaFw0xMjA1MjExMDE0MDBa
+MG8xCzAJBgNVBAYTAlVLMQ8wDQYDVQQIEwZTdXJyZXkxFDASBgNVBAoTC0V4YW1w
+bGUgSW5jMRowGAYDVQQDExFFeGFtcGxlIEluYyBQaG9uZTEdMBsGCSqGSIb3DQEJ
+ARYOZG9vckBrZXkuY28udWswggNGMIICOQYHKoZIzjgEATCCAiwCggEBAKmuwU8y
+ctO/0KVo9EYclicSJaRC9CK6zFmyveC/AY6tY9/buodX6iY3d9ACkeYlJqImFeSR
+iBHqy4fCmj7NX5Xup8ugHcynhYAHJXMM9kuPFhKXOjHClS47JptlXjba2ohRa4IA
+my5UzdkxpRLkGla1OdIdXrIa/K3rkdYIhhx9Pn6PysRuJUq+W+wjGrNYOOydhn/L
+OIODfSlJkvBQtW/1RToRhDCv83eeCc7YmZcOuF7ByLyULINsG2jFiQahvRFtXMW1
+BNjK9fAvqU/oIfHkFe3qm0TPqIfYfSPymNvgAUXo4FN3DLLQRRjAydfi4Rdh1AXx
+k9lm1S82zc/CHCsCIQDCceToqfqv/B91VkVfOg6ReRjK8Y8tApXo1ftj/VuBiwKC
+AQBMU6/EVPA6FkqxJGdHgitad5qDZ1WABb480HlpRDqVoceDwzz5/MDi93w5Z8Rt
+0dxQ1U6edwP3xWmDPohBcQ2wDdXdM5okgbWqBxUjdp8kt6ptZUTzEr6HF73VgDJ3
+0zbkL39ZDz5KKGPDk2r/6AUVK+lD7VltonlSaRsaZtR4/Z6AsBTkT8xBp0Juxtlm
+vWGyWDqEZjDgdovgxc8NtGswTXVtqSZ7GhflX112VeUrg/VnJrYRa6pwoeL1yzaY
+Rjc7Jsh+tvAnryi8/QSzDZgS4KSZX32Zt4rXY4+KpOQwPGERE+5kilt2CiUnxkSo
+8UzbJ+LmvX6ZBweZXlPt6cDLA4IBBQACggEALY81P/Elk+vWSE5uLtQzkL1pPvZE
+u8N4RwKe7pV+hwSfiQHsymCLGpb5uc9+G+D8l5JPzuaXFSCioHsjc7pqC2G45eRU
+S0v1wt71HeZHXrmuBSw+7S0snLVGUDVK6VVb7bIexR7DIVsc8rjzy4nnjgRdgKcD
+y0/CnvMuaew0JG84V6DYEHhdAjr6ZUJsGd9J03uUpLDVoq7FrjtgUBIAHm2e7Sdu
+xWlQll3mEOSUsZuzbPJf/fayMU64s42kr1CKAjlhp/6WWZIk0pNTSbzZDU4B332b
+tkbVAw51USH5H8JRLRwXvPtBX5mra2eHQ+Acvna+IBZT6gBcdQNs1ea6eaOCASMw
+ggEfMAkGA1UdEwQCMAAwHQYDVR0OBBYEFDM3xjuegLeldTSKoWrpvqqG76x/MIG3
+BgNVHSMEga8wgayAFPqE91kM2SnZVxmAKRZXQX7Ie3kyoYGIpIGFMIGCMQswCQYD
+VQQGEwJVSzEPMA0GA1UECBMGU3VycmV5MQ4wDAYDVQQHEwVFZ2hhbjEUMBIGA1UE
+ChMLRXhhbXBsZSBJbmMxHDAaBgNVBAMTE0V4YW1wbGUgSW5jIFJvb3QgQ0ExHjAc
+BgkqhkiG9w0BCQEWD2Rvb3JAbG9jay5jby51a4IJALctsSKszsYoMDkGCWCGSAGG
++EIBBAQsFipodHRwczovL3d3dy5leGFtcGxlLmNvbS9leGFtcGxlLWNhLWNybC5w
+ZW0wCQYHKoZIzjgEAwNIADBFAiAFm9uXUMFgEwVm2xVtyFBa3pNVkwfw/IbIXGTc
+Ucw5lAIhAIrumridXwSS1Q1dRxYaEhUxt9HGjahP+wC6lKf6hfuU
+-----END CERTIFICATE-----
