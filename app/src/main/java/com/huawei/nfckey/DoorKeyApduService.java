@@ -7,18 +7,49 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
-import java.io.ByteArrayOutputStream;
+
+import org.spongycastle.jce.ECNamedCurveTable;
+import org.spongycastle.jce.provider.BouncyCastleProvider;
+import org.spongycastle.jce.spec.ECParameterSpec;
+import org.spongycastle.openssl.jcajce.JcaPEMWriter;
+import org.spongycastle.util.io.pem.PemWriter;
+import org.spongycastle.x509.X509V3CertificateGenerator;
+
+
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.security.AlgorithmParameters;
+import java.security.InvalidKeyException;
 import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.SecureRandom;
 import java.security.Security;
 import java.security.Signature;
+import java.security.SignatureException;
+import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.security.spec.ECGenParameterSpec;
+import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.cert.X509Certificate;
+
+import java.util.Calendar;
+import java.util.Date;
+
+import javax.security.auth.x500.X500Principal;
 
 public class DoorKeyApduService extends HostApduService {
 
@@ -66,37 +97,40 @@ public class DoorKeyApduService extends HostApduService {
             (byte)0x00   // SW2	Status byte 2 - Command processing qualifier
     };
 
-    private byte[] certificateBuffer;
-    private byte[] keyBuffer;
     private X509Certificate certificate;
 
 
     @Override
     public void onCreate() {
-        Log.i(TAG, "Load Key");
         try {
-            ByteArrayOutputStream output = new ByteArrayOutputStream();
-            FileInputStream fis = openFileInput("door.key");
-            int size = (int)fis.getChannel().size();
-            byte[] key = new byte[size];
-            fis.read(key);
-            String keystr = new String(key);
-            keystr = keystr.replaceAll("-----BEGIN PRIVATE KEY-----\n", "");
-            keystr = keystr.replaceAll("-----END PRIVATE KEY-----\n", "");
-            keyBuffer = android.util.Base64.decode(keystr, android.util.Base64.DEFAULT);
-            fis.close();
-
             Log.i(TAG, "Load Cert");
-            fis = openFileInput("door.crt");
-            Security.addProvider(new org.bouncycastle2.jce.provider.BouncyCastleProvider());
-            CertificateFactory cf = CertificateFactory.getInstance("X.509", "BC2");
+            FileInputStream fis = openFileInput("session.pem");
+            Security.addProvider(new org.spongycastle.jce.provider.BouncyCastleProvider());
+            CertificateFactory cf = CertificateFactory.getInstance("X.509", "SC");
             certificate = (X509Certificate) cf.generateCertificate((InputStream) fis);
             fis.close();
-            certificateBuffer = certificate.getEncoded();
         } catch (Exception e) {
             Log.e(TAG, "Failed to load keys: " + e.getMessage());
         }
         Log.e(TAG, "Keys loaded!");
+    }
+
+    public byte[] signChallenge(byte[] challenge) throws Exception
+    {
+        FileInputStream fis = openFileInput("session.key");
+        int size = (int)fis.getChannel().size();
+        byte[] key = new byte[size];
+        fis.read(key);
+        fis.close();
+
+        KeyFactory keyFactory = KeyFactory.getInstance(certificate.getPublicKey().getAlgorithm(), "SC");
+
+        PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(key);
+        PrivateKey privateKey = keyFactory.generatePrivate(privateKeySpec);
+        Signature s = Signature.getInstance(certificate.getSigAlgName(), "SC");
+        s.initSign(privateKey);
+        s.update(challenge);
+        return s.sign();
     }
 
 
@@ -136,7 +170,7 @@ public class DoorKeyApduService extends HostApduService {
                 byte[] certlen = ByteBuffer.allocate(2 * 4)
                         .order(ByteOrder.LITTLE_ENDIAN)
                         .putInt(MAX_FRAME)
-                        .putInt(certificateBuffer.length)
+                        .putInt(certificate.getEncoded().length)
                         .array();
 
 
@@ -152,6 +186,8 @@ public class DoorKeyApduService extends HostApduService {
             // Lock want to read cert fragment
             if (utils.startsWith(DOOR_IDENT_FRAGMENT, commandApdu)) {
                 int frag = commandApdu[3];
+
+                byte[] certificateBuffer = certificate.getEncoded();
 
                 int len = MAX_FRAME;
 
@@ -178,13 +214,7 @@ public class DoorKeyApduService extends HostApduService {
 
                 System.arraycopy(commandApdu, 0, challenge, 0, challenge.length);
 
-                KeyFactory keyFactory = KeyFactory.getInstance(certificate.getPublicKey().getAlgorithm(), "BC2");
-                PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(keyBuffer);
-                PrivateKey privateKey = keyFactory.generatePrivate(privateKeySpec);
-                Signature s = Signature.getInstance(certificate.getSigAlgName(), "BC2");
-                s.initSign(privateKey);
-                s.update(challenge);
-                byte[] sign = s.sign();
+                byte[] sign = signChallenge(challenge);
 
                 byte[] response = new byte[sign.length + A_OKAY.length];
                 System.arraycopy(sign, 0, response, 0, sign.length);

@@ -1,1 +1,1 @@
-include ':app', ':bcprov-jdk16-146-recom'
+include ':app'

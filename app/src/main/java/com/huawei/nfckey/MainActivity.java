@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -28,6 +29,15 @@ public class MainActivity extends ActionBarActivity {
 
         copyFile("door.key");
         copyFile("door.crt");
+        copyFile("ecc.key");
+        copyFile("cert.pem");
+
+        try {
+            utils.generateSessionCert(getBaseContext());
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to generate ECC key:" + e.getMessage());
+        }
+
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -66,7 +76,7 @@ public class MainActivity extends ActionBarActivity {
         OutputStream out = null;
         String newFileName = null;
         try {
-            Log.i("tag", "copyFile() " + filename);
+            Log.i(TAG, "copyFile() " + filename);
             in = assetManager.open(filename);
             out = getBaseContext().openFileOutput(filename, Context.MODE_PRIVATE);
 
