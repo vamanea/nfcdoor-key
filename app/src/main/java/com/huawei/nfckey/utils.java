@@ -54,6 +54,7 @@ import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.MessageDigest;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
@@ -62,6 +63,7 @@ import java.security.Signature;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.Arrays;
 import java.util.Date;
 
 import javax.security.auth.x500.X500Principal;
@@ -139,6 +141,60 @@ public class utils {
         return null;
     }
 
+    public static String certThumbprint(Context context) throws Exception
+    {
+        Security.addProvider(new BouncyCastleProvider());
+
+        FileInputStream fis = context.openFileInput("cert.pem");
+        Security.addProvider(new org.spongycastle.jce.provider.BouncyCastleProvider());
+        CertificateFactory cf = CertificateFactory.getInstance("X.509", "SC");
+        X509Certificate certificate = (X509Certificate) cf.generateCertificate((InputStream) fis);
+
+        MessageDigest mdSha1 = null;
+        mdSha1 = MessageDigest.getInstance("SHA-1");
+        mdSha1.update(certificate.getEncoded());
+
+        StringBuilder str = new StringBuilder(bytesToHex(Arrays.copyOfRange(mdSha1.digest(), 0, 10)));
+        int idx = str.length() - 2;
+
+        while (idx > 0)
+        {
+            str.insert(idx, ":");
+            idx = idx - 2;
+        }
+
+        return str.toString();
+    }
+
+    public static String sessionThumbprint(Context context) throws Exception
+    {
+        FileInputStream fis = context.openFileInput("session.key");
+        int size = (int)fis.getChannel().size();
+        byte[] key = new byte[size];
+        fis.read(key);
+        fis.close();
+
+        KeyFactory keyFactory = KeyFactory.getInstance("ECDSA", "SC");
+
+        PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(key);
+        PrivateKey privateKey = keyFactory.generatePrivate(privateKeySpec);
+
+        MessageDigest mdSha1 = null;
+        mdSha1 = MessageDigest.getInstance("SHA-1");
+        mdSha1.update(privateKeySpec.getEncoded());
+
+        StringBuilder str = new StringBuilder(bytesToHex(Arrays.copyOfRange(mdSha1.digest(), 0, 10)));
+        int idx = str.length() - 2;
+
+        while (idx > 0)
+        {
+            str.insert(idx, ":");
+            idx = idx - 2;
+        }
+
+        return str.toString();
+    }
+
     public static void generateSessionCert(Context context) throws Exception
     {
         Security.addProvider(new BouncyCastleProvider());
@@ -162,26 +218,12 @@ public class utils {
         CertificateFactory cf = CertificateFactory.getInstance("X.509", "SC");
         X509Certificate certificate = (X509Certificate) cf.generateCertificate((InputStream) fis);
 
-
         KeyFactory keyFactory = KeyFactory.getInstance(certificate.getPublicKey().getAlgorithm(), "SC");
 
         PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(key);
         PrivateKey caKey = keyFactory.generatePrivate(privateKeySpec);
 
-/*
-        X509V3CertificateGenerator certGen=new X509V3CertificateGenerator();
-        certGen.setSerialNumber(certificate.getSerialNumber().add(BigInteger.valueOf(System.currentTimeMillis())));
-        certGen.setNotBefore(certificate.getNotBefore());
-        certGen.setNotAfter(certificate.getNotAfter());
-        certGen.setSubjectDN(new X500Principal("CN=Herr Steinhilber,OU=IK510844109," + "OU=RTA GmbH, O=ITSG TrustCenter fuer sonstige Leistungserbringer,C=DE"));
-        certGen.setIssuerDN(new X500Principal("CN=Herr Steinhilber,OU=IK510844109," + "OU=RTA GmbH, O=ITSG TrustCenter fuer sonstige Leistungserbringer,C=DE"));
-        //certGen.setIssuerDN(certificate.getSubjectX500Principal());
-
-        certGen.setPublicKey(keyPair.getPublic());
-        certGen.setSignatureAlgorithm("SHA256WITHECDSA");
-        X509Certificate cert = certGen.generate(keyPair.getPrivate(), "SC");
-*/
-        String subject = "CN=Herr Steinhilber,OU=IK510844109," + "OU=RTA GmbH, O=ITSG TrustCenter fuer sonstige Leistungserbringer,C=DE";
+        String subject = "CN=Herr Steinhilber,OU=IK510844109";
         String issuer = certificate.getSubjectDN().toString();
         Date dateOfIssuing = certificate.getNotBefore();
         Date dateOfExpiry = certificate.getNotAfter();
@@ -192,8 +234,6 @@ public class utils {
                 dateOfExpiry,
                 new X500Name(subject),
                 SubjectPublicKeyInfo.getInstance(keyPair.getPublic().getEncoded()));
-        //certBuilder.addExtension(X509Extension.basicConstraints,true,new BasicConstraints(false));
-        //certBuilder.addExtension(X509Extension.keyUsage,true,new KeyUsage(KeyUsage.digitalSignature));
         certBuilder.addExtension(Extension.basicConstraints,true,new BasicConstraints(false));
         certBuilder.addExtension(Extension.keyUsage,true,new KeyUsage(KeyUsage.digitalSignature));
 
@@ -223,7 +263,6 @@ public class utils {
         byte[] privateKey = keyPair.getPrivate().getEncoded();
         fos.write(privateKey, 0, privateKey.length);
         fos.close();
-
 
 
         Log.i(TAG, "EC session cert generated");

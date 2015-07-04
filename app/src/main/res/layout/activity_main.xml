@@ -36,29 +36,58 @@
             android:layout_marginBottom="20dp" />
 
         <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/root_hash"
+            android:layout_above="@+id/description"
+            android:layout_centerHorizontal="true"
+            style="@style/Base.TextAppearance.AppCompat.Title" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Session hash:"
+            android:id="@+id/SessionHeader"
+            android:layout_below="@+id/root_hash"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentStart="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/session_hash"
+            android:layout_below="@+id/SessionHeader"
+            android:layout_centerHorizontal="true"
+            style="@style/Base.TextAppearance.AppCompat.Title" />
+
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/description"
             android:id="@+id/description"
             android:layout_below="@+id/Header"
             android:layout_alignParentStart="true"
-            android:layout_marginBottom="20dp" />
+            android:layout_marginTop="134dp" />
 
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/ndef_text"
+            android:hint="Enter plain text for NDEF"
             android:layout_below="@+id/description"
-            android:layout_alignParentStart="true"
-            android:hint="Enter plain text for NDEF" />
+            android:layout_alignParentEnd="true" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/set_ndef_button"
             android:id="@+id/set_ndef_button"
-            android:layout_below="@+id/ndef_text"
-            android:layout_alignEnd="@+id/ndef_text" />
-        </RelativeLayout>
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true" />
+
+
+
+    </RelativeLayout>
 
 </RelativeLayout>

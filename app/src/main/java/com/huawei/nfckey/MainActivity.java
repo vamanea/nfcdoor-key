@@ -43,6 +43,21 @@ public class MainActivity extends ActionBarActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.app_name);
 
+        TextView rootHash = (TextView)findViewById(R.id.root_hash);
+        TextView sessionHash = (TextView)findViewById(R.id.session_hash);
+        try {
+            rootHash.setText(utils.certThumbprint(getBaseContext()));
+            sessionHash.setText(utils.sessionThumbprint(getBaseContext()));
+        }catch (Exception e) {
+            rootHash.setText("no key");
+        }
+
+        try {
+            sessionHash.setText(utils.sessionThumbprint(getBaseContext()));
+        }catch (Exception e) {
+            sessionHash.setText("no key");
+        }
+
         // Android Studio + app:theme = angry for me at moment
         // just set the text white really quick
         toolbar.setTitleTextColor(Color.parseColor("#ffffff"));

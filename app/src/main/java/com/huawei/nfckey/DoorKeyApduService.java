@@ -1,11 +1,14 @@
 package com.huawei.nfckey;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.nfc.cardemulation.HostApduService;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.Gravity;
+import android.widget.Toast;
 
 
 import org.spongycastle.jce.ECNamedCurveTable;
@@ -117,7 +120,7 @@ public class DoorKeyApduService extends HostApduService {
 
     public byte[] signChallenge(byte[] challenge) throws Exception
     {
-        FileInputStream fis = openFileInput("ecc.key");
+        FileInputStream fis = openFileInput("session.key");
         int size = (int)fis.getChannel().size();
         byte[] key = new byte[size];
         fis.read(key);
@@ -219,6 +222,14 @@ public class DoorKeyApduService extends HostApduService {
                 byte[] response = new byte[sign.length + A_OKAY.length];
                 System.arraycopy(sign, 0, response, 0, sign.length);
                 System.arraycopy(A_OKAY, 0, response, sign.length, A_OKAY.length);
+
+
+                Context context = getApplicationContext();
+                CharSequence text = "Door unlock sent!";
+                int duration = Toast.LENGTH_SHORT;
+                Toast toast = Toast.makeText(context, text, duration);
+                toast.setGravity(Gravity.CENTER, 0, 0);
+                toast.show();
 
                 Log.i(TAG, "Got lock challenge. Our Response: " + utils.bytesToHex(response));
                 return response;
