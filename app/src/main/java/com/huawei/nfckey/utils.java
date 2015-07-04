@@ -5,6 +5,7 @@ package com.huawei.nfckey;
  */
 
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 
 import org.spongycastle.asn1.ASN1Sequence;
@@ -168,20 +169,14 @@ public class utils {
 
     public static String sessionThumbprint(Context context) throws Exception
     {
-        FileInputStream fis = context.openFileInput("session.key");
-        int size = (int)fis.getChannel().size();
-        byte[] key = new byte[size];
-        fis.read(key);
-        fis.close();
-
-        KeyFactory keyFactory = KeyFactory.getInstance("ECDSA", "SC");
-
-        PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(key);
-        PrivateKey privateKey = keyFactory.generatePrivate(privateKeySpec);
+        FileInputStream fis = context.openFileInput("session.pem");
+        Security.addProvider(new org.spongycastle.jce.provider.BouncyCastleProvider());
+        CertificateFactory cf = CertificateFactory.getInstance("X.509", "SC");
+        X509Certificate certificate = (X509Certificate) cf.generateCertificate((InputStream) fis);
 
         MessageDigest mdSha1 = null;
         mdSha1 = MessageDigest.getInstance("SHA-1");
-        mdSha1.update(privateKeySpec.getEncoded());
+        mdSha1.update(certificate.getEncoded());
 
         StringBuilder str = new StringBuilder(bytesToHex(Arrays.copyOfRange(mdSha1.digest(), 0, 10)));
         int idx = str.length() - 2;
@@ -223,7 +218,7 @@ public class utils {
         PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(key);
         PrivateKey caKey = keyFactory.generatePrivate(privateKeySpec);
 
-        String subject = "CN=Herr Steinhilber,OU=IK510844109";
+        String subject = "CN=" + Build.MODEL +",OU=" + Build.ID;
         String issuer = certificate.getSubjectDN().toString();
         Date dateOfIssuing = certificate.getNotBefore();
         Date dateOfExpiry = certificate.getNotAfter();
@@ -310,7 +305,9 @@ public class utils {
         public byte[] getSignature() {
             try {
                 signature.update(outputStream.toByteArray());
-                return signature.sign();
+                byte[] sig = signature.sign();
+                Log.i(TAG, "Session cert signature: " + bytesToHex(sig));
+                return  sig;
             } catch (GeneralSecurityException gse) {
                 gse.printStackTrace();
                 return null;
