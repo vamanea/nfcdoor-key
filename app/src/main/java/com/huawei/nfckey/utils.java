@@ -7,6 +7,19 @@ package com.huawei.nfckey;
 import android.content.Context;
 import android.util.Log;
 
+import org.spongycastle.asn1.ASN1Sequence;
+import org.spongycastle.asn1.oiw.OIWObjectIdentifiers;
+import org.spongycastle.asn1.x500.X500Name;
+import org.spongycastle.asn1.x509.AlgorithmIdentifier;
+import org.spongycastle.asn1.x509.BasicConstraints;
+import org.spongycastle.asn1.x509.ExtendedKeyUsage;
+import org.spongycastle.asn1.x509.Extension;
+import org.spongycastle.asn1.x509.KeyPurposeId;
+import org.spongycastle.asn1.x509.KeyUsage;
+import org.spongycastle.asn1.x509.SubjectPublicKeyInfo;
+import org.spongycastle.asn1.x509.X509Extension;
+import org.spongycastle.cert.X509ExtensionUtils;
+import org.spongycastle.cert.X509v3CertificateBuilder;
 import org.spongycastle.crypto.generators.ECKeyPairGenerator;
 import org.spongycastle.crypto.params.ECPrivateKeyParameters;
 import org.spongycastle.crypto.params.ECPublicKeyParameters;
@@ -19,18 +32,25 @@ import org.spongycastle.jce.interfaces.ECPrivateKey;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.spongycastle.jce.spec.ECParameterSpec;
 import org.spongycastle.openssl.jcajce.JcaPEMWriter;
+import org.spongycastle.operator.ContentSigner;
+import org.spongycastle.operator.DigestCalculator;
+import org.spongycastle.operator.bc.BcDigestCalculatorProvider;
 import org.spongycastle.util.io.pem.PemObject;
 import org.spongycastle.util.io.pem.PemReader;
 import org.spongycastle.asn1.ASN1ObjectIdentifier;
 import org.spongycastle.x509.X509V3CertificateGenerator;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.math.BigInteger;
+import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -38,9 +58,11 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.Security;
+import java.security.Signature;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.Date;
 
 import javax.security.auth.x500.X500Principal;
 
@@ -146,16 +168,50 @@ public class utils {
         PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(key);
         PrivateKey caKey = keyFactory.generatePrivate(privateKeySpec);
 
-
+/*
         X509V3CertificateGenerator certGen=new X509V3CertificateGenerator();
-        certGen.setSerialNumber(BigInteger.valueOf(System.currentTimeMillis()));
-        certGen.setIssuerDN(certificate.getSubjectX500Principal());
+        certGen.setSerialNumber(certificate.getSerialNumber().add(BigInteger.valueOf(System.currentTimeMillis())));
         certGen.setNotBefore(certificate.getNotBefore());
         certGen.setNotAfter(certificate.getNotAfter());
         certGen.setSubjectDN(new X500Principal("CN=Herr Steinhilber,OU=IK510844109," + "OU=RTA GmbH, O=ITSG TrustCenter fuer sonstige Leistungserbringer,C=DE"));
+        certGen.setIssuerDN(new X500Principal("CN=Herr Steinhilber,OU=IK510844109," + "OU=RTA GmbH, O=ITSG TrustCenter fuer sonstige Leistungserbringer,C=DE"));
+        //certGen.setIssuerDN(certificate.getSubjectX500Principal());
+
         certGen.setPublicKey(keyPair.getPublic());
         certGen.setSignatureAlgorithm("SHA256WITHECDSA");
-        X509Certificate cert = certGen.generate(caKey, "SC");
+        X509Certificate cert = certGen.generate(keyPair.getPrivate(), "SC");
+*/
+        String subject = "CN=Herr Steinhilber,OU=IK510844109," + "OU=RTA GmbH, O=ITSG TrustCenter fuer sonstige Leistungserbringer,C=DE";
+        String issuer = certificate.getSubjectDN().toString();
+        Date dateOfIssuing = certificate.getNotBefore();
+        Date dateOfExpiry = certificate.getNotAfter();
+        X509v3CertificateBuilder certBuilder = new X509v3CertificateBuilder(
+                new X500Name(issuer),
+                new BigInteger("1"),
+                dateOfIssuing,
+                dateOfExpiry,
+                new X500Name(subject),
+                SubjectPublicKeyInfo.getInstance(keyPair.getPublic().getEncoded()));
+        //certBuilder.addExtension(X509Extension.basicConstraints,true,new BasicConstraints(false));
+        //certBuilder.addExtension(X509Extension.keyUsage,true,new KeyUsage(KeyUsage.digitalSignature));
+        certBuilder.addExtension(Extension.basicConstraints,true,new BasicConstraints(false));
+        certBuilder.addExtension(Extension.keyUsage,true,new KeyUsage(KeyUsage.digitalSignature));
+
+        DigestCalculator digCalc = new BcDigestCalculatorProvider().get(new AlgorithmIdentifier(OIWObjectIdentifiers.idSHA1));
+        X509ExtensionUtils x509ExtensionUtils = new X509ExtensionUtils(digCalc);
+
+        SubjectPublicKeyInfo subjPubKeyInfo = new SubjectPublicKeyInfo(ASN1Sequence.getInstance(keyPair.getPublic().getEncoded()));
+        SubjectPublicKeyInfo authPubKeyInfo = new SubjectPublicKeyInfo(ASN1Sequence.getInstance(certificate.getPublicKey().getEncoded()));
+
+        //Subject Key Identifier
+        certBuilder.addExtension(Extension.subjectKeyIdentifier, false, x509ExtensionUtils.createSubjectKeyIdentifier(subjPubKeyInfo));
+        //Authority Key Identifier
+        certBuilder.addExtension(Extension.authorityKeyIdentifier, false, x509ExtensionUtils.createAuthorityKeyIdentifier(authPubKeyInfo));
+
+        byte[] certBytes = certBuilder.build(new JCESigner(caKey, certificate.getSigAlgName())).getEncoded();
+        CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
+        X509Certificate cert = (X509Certificate)certificateFactory.generateCertificate(new ByteArrayInputStream(certBytes));
+
 
         FileOutputStream fos = context.openFileOutput("session.pem", Context.MODE_PRIVATE);
         JcaPEMWriter pemWriter = new JcaPEMWriter(new FileWriter(fos.getFD()));
@@ -173,4 +229,52 @@ public class utils {
         Log.i(TAG, "EC session cert generated");
 
     }
+
+    private static class JCESigner implements ContentSigner {
+
+        private static final AlgorithmIdentifier PKCS1_SHA256_WITH_RSA_OID = new AlgorithmIdentifier(new ASN1ObjectIdentifier("1.2.840.113549.1.1.11"));
+        private static final AlgorithmIdentifier PKCS1_SHA256_WITH_ECDSA_OID = new AlgorithmIdentifier(new ASN1ObjectIdentifier("1.2.840.10045.4.3.2"));
+
+        private Signature signature;
+        private ByteArrayOutputStream outputStream;
+
+        public JCESigner(PrivateKey privateKey, String signatureAlgorithm) {
+            if (!"SHA256WITHECDSA".equals(signatureAlgorithm)) {
+                throw new IllegalArgumentException("Signature algorithm \"" + signatureAlgorithm + "\" not yet supported");
+            }
+            try {
+                this.outputStream = new ByteArrayOutputStream();
+                this.signature = Signature.getInstance(signatureAlgorithm);
+                this.signature.initSign(privateKey);
+            } catch (GeneralSecurityException gse) {
+                throw new IllegalArgumentException(gse.getMessage());
+            }
+        }
+
+        @Override
+        public AlgorithmIdentifier getAlgorithmIdentifier() {
+            if (signature.getAlgorithm().equals("SHA256withRSA")) {
+                return PKCS1_SHA256_WITH_RSA_OID;
+            } else if (signature.getAlgorithm().equals("SHA256WITHECDSA")) {
+                return PKCS1_SHA256_WITH_ECDSA_OID;
+            } else {
+                return null;
+            }
+        }
+
+        @Override
+        public OutputStream getOutputStream() {
+            return outputStream;
+        }
+
+        @Override
+        public byte[] getSignature() {
+            try {
+                signature.update(outputStream.toByteArray());
+                return signature.sign();
+            } catch (GeneralSecurityException gse) {
+                gse.printStackTrace();
+                return null;
+            }
+        }    }
 }

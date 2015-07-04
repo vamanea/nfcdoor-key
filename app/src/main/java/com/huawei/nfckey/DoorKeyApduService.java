@@ -117,7 +117,7 @@ public class DoorKeyApduService extends HostApduService {
 
     public byte[] signChallenge(byte[] challenge) throws Exception
     {
-        FileInputStream fis = openFileInput("session.key");
+        FileInputStream fis = openFileInput("ecc.key");
         int size = (int)fis.getChannel().size();
         byte[] key = new byte[size];
         fis.read(key);
