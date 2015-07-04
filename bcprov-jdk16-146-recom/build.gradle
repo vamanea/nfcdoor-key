@@ -1,2 +1,0 @@
-configurations.create("default")
-artifacts.add("default", file('bcprov-jdk16-146-recom.jar'))
