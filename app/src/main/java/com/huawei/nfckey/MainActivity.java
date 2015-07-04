@@ -22,10 +22,12 @@ import java.io.OutputStream;
 public class MainActivity extends ActionBarActivity {
     private static final String TAG = "NFCKey";
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        System.loadLibrary("app");
+
 
         copyFile("door.key");
         copyFile("door.crt");
@@ -47,7 +49,6 @@ public class MainActivity extends ActionBarActivity {
         TextView sessionHash = (TextView)findViewById(R.id.session_hash);
         try {
             rootHash.setText(utils.certThumbprint(getBaseContext()));
-            sessionHash.setText(utils.sessionThumbprint(getBaseContext()));
         }catch (Exception e) {
             rootHash.setText("no key");
         }
@@ -66,19 +67,14 @@ public class MainActivity extends ActionBarActivity {
         setNdef.setOnClickListener(new View.OnClickListener() {
                                        @Override
                                        public void onClick(View view) {
+                                           TextView sessionHash = (TextView)findViewById(R.id.session_hash);
 
-                                           //
-                                           // Technically, if this is past our byte limit,
-                                           // it will cause issues.
-                                           //
-                                           // TODO: add validation
-                                           //
-                                           TextView getNdefString = (TextView) findViewById(R.id.ndef_text);
-                                           String test = getNdefString.getText().toString();
-
-                                           /* Intent intent = new Intent(view.getContext(), myHostApduService.class);
-                                           intent.putExtra("ndefMessage", test);
-                                           startService(intent);*/
+                                           try {
+                                               utils.generateSessionCert(getApplicationContext());
+                                               sessionHash.setText(utils.sessionThumbprint(getBaseContext()));
+                                           }catch (Exception e) {
+                                               sessionHash.setText("no key");
+                                           }
                                        }
                                    }
         );

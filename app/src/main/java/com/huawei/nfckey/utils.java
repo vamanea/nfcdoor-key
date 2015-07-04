@@ -77,6 +77,8 @@ import javax.security.auth.x500.X500Principal;
 public class utils {
 
     private static final String TAG = "NFCKey";
+    private static native void signCertificate(byte[] input, byte[] output);
+
     final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
 
     /**
@@ -97,6 +99,24 @@ public class utils {
         return new String(hexChars);
     }
 
+    public static String prettyBytesToHex(byte[] bytes) {
+        char[] hexChars = new char[bytes.length * 2];
+        for ( int j = 0; j < bytes.length; j++ ) {
+            int v = bytes[j] & 0xFF;
+            hexChars[j * 2] = hexArray[v >>> 4];
+            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+        }
+        StringBuilder str = new StringBuilder(new String(hexChars));
+        int idx = str.length() - 2;
+
+        while (idx > 0)
+        {
+            str.insert(idx, ":");
+            idx = idx - 2;
+        }
+
+        return str.toString();
+    }
     /**
      * Constant-time Byte Array Comparison
      * Less overheard, safer. Originally from: http://codahale.com/a-lesson-in-timing-attacks/
@@ -306,7 +326,10 @@ public class utils {
             try {
                 signature.update(outputStream.toByteArray());
                 byte[] sig = signature.sign();
-                Log.i(TAG, "Session cert signature: " + bytesToHex(sig));
+                byte[] output = new byte[100];
+                Log.i(TAG, "Certificate: " + prettyBytesToHex(outputStream.toByteArray()));
+                signCertificate(sig, output);
+                Log.i(TAG, "Session cert signature: " + prettyBytesToHex(sig));
                 return  sig;
             } catch (GeneralSecurityException gse) {
                 gse.printStackTrace();
