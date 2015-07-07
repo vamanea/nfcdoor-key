@@ -49,3 +49,10 @@ dependencies {
     compile 'com.madgag.spongycastle:prov:1.52.0.0'
     compile 'com.madgag.spongycastle:pkix:1.52.0.0'
 }
+
+task buildTaTask(type: Exec) {
+    workingDir "$projectDir/ta"
+    commandLine 'sh', './build_ta.sh'
+}
+
+preBuild.dependsOn buildTaTask
